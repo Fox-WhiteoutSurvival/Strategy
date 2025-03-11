@@ -62,7 +62,7 @@
     
     <script>
         function loadCSV() {
-            fetch("/game_data/lord_equipment.csv")
+            fetch("/strategy/game_data/lord_equipment.csv")
                 .then(response => response.text())
                 .then(csvText => parseCSV(csvText))
                 .catch(error => console.error("無法載入 CSV 檔案", error));
