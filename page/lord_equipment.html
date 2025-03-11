@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲數據</title>
+    <style>
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            text-align: center;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .calculator, .csv-loader {
+            text-align: center;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">遊戲數據</h1>
+    
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>編號</th>
+                <th>等階</th>
+                <th>合金</th>
+                <th>拋光液</th>
+                <th>卷軸</th>
+                <th>月光石</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- CSV 資料會填充在這裡 -->
+        </tbody>
+    </table>
+    
+    <div class="calculator">
+        <h2>升級計算機</h2>
+        <label for="startLevel">起始編號:</label>
+        <select id="startLevel"></select>
+        
+        <label for="endLevel">最終編號:</label>
+        <select id="endLevel"></select>
+        
+        <label for="quantity">件數:</label>
+        <input type="number" id="quantity" min="1" value="1">
+        
+        <button onclick="calculateMaterials()">計算</button>
+        
+        <h3>材料消耗</h3>
+        <p id="result">請選擇等級並輸入件數</p>
+    </div>
+    
+    <script>
+        function loadCSV() {
+            fetch("/game_data/lord_equipment.csv")
+                .then(response => response.text())
+                .then(csvText => parseCSV(csvText))
+                .catch(error => console.error("無法載入 CSV 檔案", error));
+        }
+        
+        function parseCSV(csvText) {
+            const rows = csvText.split("\n").map(row => row.split(","));
+            const tbody = document.querySelector("#dataTable tbody");
+            const startLevelSelect = document.getElementById("startLevel");
+            const endLevelSelect = document.getElementById("endLevel");
+            
+            tbody.innerHTML = "";
+            startLevelSelect.innerHTML = "";
+            endLevelSelect.innerHTML = "";
+            
+            rows.forEach(row => {
+                if (row.length < 6) return;
+                const tr = document.createElement("tr");
+                row.forEach(cell => {
+                    const td = document.createElement("td");
+                    td.textContent = cell.trim();
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+                
+                const levelOption = document.createElement("option");
+                levelOption.value = row[0];
+                levelOption.textContent = row[0];
+                startLevelSelect.appendChild(levelOption.cloneNode(true));
+                endLevelSelect.appendChild(levelOption);
+            });
+        }
+        
+        function calculateMaterials() {
+            let start = parseInt(document.getElementById('startLevel').value);
+            let end = parseInt(document.getElementById('endLevel').value);
+            let quantity = parseInt(document.getElementById('quantity').value);
+            
+            if (start >= end) {
+                document.getElementById('result').innerText = "最終等級必須高於起始等級";
+                return;
+            }
+            
+            let alloy = 0, polish = 0, scroll = 0, moonstone = 0;
+            const rows = document.querySelectorAll("#dataTable tbody tr");
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td");
+                let level = parseInt(cells[0].textContent);
+                if (level > start && level <= end) {
+                    alloy += parseInt(cells[2].textContent || 0) * quantity;
+                    polish += parseInt(cells[3].textContent || 0) * quantity;
+                    scroll += parseInt(cells[4].textContent || 0) * quantity;
+                    moonstone += parseInt(cells[5].textContent || 0) * quantity;
+                }
+            });
+            
+            document.getElementById('result').innerText = `合金: ${alloy}, 拋光液: ${polish}, 卷軸: ${scroll}, 月光石: ${moonstone}`;
+        }
+        
+        document.addEventListener("DOMContentLoaded", loadCSV);
+    </script>
+</body>
+</html>
