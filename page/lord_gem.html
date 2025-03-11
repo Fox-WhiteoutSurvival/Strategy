@@ -178,9 +178,9 @@
                 const cells = row.querySelectorAll("td");
                 let level = parseInt(cells[0].textContent);
                 if (level > start && level <= end) {
-                    met1 += parseInt(cells[2].textContent || 0) * quantity;
-                    met2 += parseInt(cells[3].textContent || 0) * quantity;
-                    met3 += parseInt(cells[4].textContent || 0) * quantity;
+                    met1 += parseInt(cells[1].textContent || 0) * quantity;
+                    met2 += parseInt(cells[2].textContent || 0) * quantity;
+                    met3 += parseInt(cells[3].textContent || 0) * quantity;
                 }
             });
             
