@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>領主裝備</title>
+    <title>領主寶石</title>
     <style>
         body {
             display: flex;
@@ -73,17 +73,15 @@
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">領主裝備</h1>
+    <h1 style="text-align: center;">領主寶石</h1>
     
     <table id="dataTable">
         <thead>
             <tr>
                 <th>編號</th>
-                <th>等階</th>
-                <th>合金</th>
-                <th>拋光液</th>
-                <th>卷軸</th>
-                <th>月光石</th>
+                <th>寶石手冊</th>
+                <th>寶石圖紙</th>
+                <th>寶石秘典</th>
             </tr>
         </thead>
         <tbody>
@@ -129,7 +127,7 @@
         }
 
         function loadCSV() {
-            fetch("/strategy/game_data/lord_equipment.csv")
+            fetch("/strategy/game_data/lord_gem.csv")
                 .then(response => response.text())
                 .then(csvText => parseCSV(csvText))
                 .catch(error => console.error("無法載入 CSV 檔案", error));
@@ -146,7 +144,7 @@
             endLevelSelect.innerHTML = "";
             
             rows.forEach(row => {
-                if (row.length < 6) return;
+                if (row.length < 4) return;
                 const tr = document.createElement("tr");
                 row.forEach(cell => {
                     const td = document.createElement("td");
@@ -173,21 +171,20 @@
                 return;
             }
             
-            let alloy = 0, polish = 0, scroll = 0, moonstone = 0;
+            let met1 = 0, met2 = 0, met3 = 0;
             const rows = document.querySelectorAll("#dataTable tbody tr");
             
             rows.forEach(row => {
                 const cells = row.querySelectorAll("td");
                 let level = parseInt(cells[0].textContent);
                 if (level > start && level <= end) {
-                    alloy += parseInt(cells[2].textContent || 0) * quantity;
-                    polish += parseInt(cells[3].textContent || 0) * quantity;
-                    scroll += parseInt(cells[4].textContent || 0) * quantity;
-                    moonstone += parseInt(cells[5].textContent || 0) * quantity;
+                    met1 += parseInt(cells[2].textContent || 0) * quantity;
+                    met2 += parseInt(cells[3].textContent || 0) * quantity;
+                    met3 += parseInt(cells[4].textContent || 0) * quantity;
                 }
             });
             
-            document.getElementById('result').innerText = `合金: ${alloy},\n拋光液: ${polish},\n卷軸: ${scroll},\n月光石: ${moonstone}`;
+            document.getElementById('result').innerText = `寶石手冊: ${met1},\n寶石圖紙: ${met2},\n寶石秘典: ${met3}`;
         }
         
         document.addEventListener("DOMContentLoaded", loadCSV);
