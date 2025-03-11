@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>遊戲數據</title>
     <style>
+        body {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 20px;
+        }
         table {
             width: 60%;
             border-collapse: collapse;
             text-align: center;
-            margin: 20px auto;
         }
         th, td {
             border: 1px solid black;
@@ -18,9 +23,29 @@
         th {
             background-color: #f2f2f2;
         }
-        .calculator, .csv-loader {
-            text-align: center;
-            margin: 20px auto;
+        .sidebar {
+            width: 250px;
+            position: fixed;
+            right: -260px;
+            top: 0;
+            height: 100%;
+            background: #f4f4f4;
+            padding: 20px;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease-in-out;
+        }
+        .sidebar.active {
+            right: 0;
+        }
+        .toggle-button {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -43,7 +68,9 @@
         </tbody>
     </table>
     
-    <div class="calculator">
+    <button class="toggle-button" onclick="toggleSidebar()">計算機</button>
+    
+    <div class="sidebar" id="calculatorSidebar">
         <h2>升級計算機</h2>
         <label for="startLevel">起始編號:</label>
         <select id="startLevel"></select>
@@ -59,8 +86,13 @@
         <h3>材料消耗</h3>
         <p id="result">請選擇等級並輸入件數</p>
     </div>
-    
+
     <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("calculatorSidebar");
+            sidebar.classList.toggle("active");
+        }
+
         function loadCSV() {
             fetch("/strategy/game_data/lord_equipment.csv")
                 .then(response => response.text())
